@@ -4,7 +4,7 @@ import numpy as np
 from io import BytesIO
 
 # Define the actions globally
-actions = ["Sitting", "Running", "Walking"]
+actions = ["Sitting", "Running", "Walking", "Jumping", "Climbing", "Taking a gun", "Shooting", "Falling", "Falling from bed"]
 
 # Function to recognize actions from video frames
 def recognize_action(frame):
@@ -33,16 +33,20 @@ def main():
         # Decode the numpy array into an OpenCV image
         frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
+        # Create a dynamic table to display action scores
+        scores_table = st.table([[action, 0.0] for action in actions])
+
         # Process each frame in the video
         while True:
             # Perform action recognition on the frame
             recognized_action, scores = recognize_action(frame)
 
-            # Display the recognized action with scores
+            # Update the action scores in the dynamic table
+            new_values = [[action, score] for action, score in zip(actions, scores)]
+            scores_table.table(new_values)
+
+            # Display the recognized action
             st.write(f"Recognized Action: {recognized_action}")
-            st.write("Action Scores:")
-            for action, score in zip(actions, scores):
-                st.write(f"{action}: {score:.2f}")
 
             # Break the loop if no more frames
             if cv2.waitKey(30) & 0xFF == 27:
